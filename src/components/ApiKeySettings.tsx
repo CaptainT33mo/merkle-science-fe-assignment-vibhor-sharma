@@ -1,25 +1,24 @@
 import { useState, useEffect } from "react";
-import { Key, Eye, EyeOff } from "lucide-react";
+import { Key, Eye, EyeOff, Trash2 } from "lucide-react";
+import { useGlobalStore } from "@/store";
 
-interface ApiKeySettingsProps {
-  onApiKeyChange: (apiKey: string) => void;
-}
-
-export const ApiKeySettings = ({ onApiKeyChange }: ApiKeySettingsProps) => {
-  const [apiKey, setApiKey] = useState("");
+export const ApiKeySettings = () => {
+  const { apiKey, setApiKey, clearApiKey } = useGlobalStore();
   const [showKey, setShowKey] = useState(false);
+  const [inputValue, setInputValue] = useState(apiKey);
 
+  // Sync input value with store value
   useEffect(() => {
-    const savedKey = localStorage.getItem("openai_api_key");
-    if (savedKey) {
-      setApiKey(savedKey);
-      onApiKeyChange(savedKey);
-    }
-  }, [onApiKeyChange]);
+    setInputValue(apiKey);
+  }, [apiKey]);
 
   const handleSaveKey = () => {
-    localStorage.setItem("openai_api_key", apiKey);
-    onApiKeyChange(apiKey);
+    setApiKey(inputValue);
+  };
+
+  const handleClearKey = () => {
+    clearApiKey();
+    setInputValue("");
   };
 
   return (
@@ -33,15 +32,15 @@ export const ApiKeySettings = ({ onApiKeyChange }: ApiKeySettingsProps) => {
 
       <p className="text-sm text-blue-700 mb-3">
         Enter your OpenAI API key to enable AI responses. Your key is stored
-        locally in your browser.
+        locally in your browser using Zustand store with persistence.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <input
             type={showKey ? "text" : "password"}
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="sk-..."
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
           />
@@ -58,19 +57,27 @@ export const ApiKeySettings = ({ onApiKeyChange }: ApiKeySettingsProps) => {
         </div>
         <button
           onClick={handleSaveKey}
-          disabled={!apiKey.trim()}
+          disabled={!inputValue.trim()}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
         >
           Save Key
         </button>
+        {apiKey && (
+          <button
+            onClick={handleClearKey}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 whitespace-nowrap flex items-center gap-1"
+          >
+            <Trash2 className="h-4 w-4" />
+            Clear
+          </button>
+        )}
       </div>
 
-      <div className="mt-3 text-xs text-blue-600">
-        <p>
-          💡 <strong>Recommendation:</strong> For production apps, connect to
-          Supabase for secure API key management.
-        </p>
-      </div>
+      {apiKey && (
+        <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
+          ✅ API key is saved and ready to use
+        </div>
+      )}
     </div>
   );
 };

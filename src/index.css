@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -74,6 +75,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --chat-bg: linear-gradient(135deg, oklch(0.5061 0.278777 273.6814) 0%, oklch(0.6937 0.2284 312.73) 100%);
 }
 
 .dark {
@@ -108,6 +110,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --chat-bg: linear-gradient(135deg, oklch(0.5061 0.278777 273.6814) 0%, oklch(0.6937 0.2284 312.73) 100%);
 }
 
 @layer base {
@@ -116,5 +119,98 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .merkle-gradient {
+    background: var(--chat-bg);
+  }
+
+  .sidebar-item {
+    @apply flex items-center px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer;
+  }
+
+  .sidebar-item.active {
+    @apply bg-blue-50 text-blue-600 border-r-2 border-blue-600;
+  }
+
+  .chat-message-user {
+    @apply bg-blue-100 text-blue-900 rounded-2xl px-4 py-3 ml-auto max-w-xs break-words;
+  }
+
+  .chat-message-ai {
+    @apply bg-white text-gray-900 rounded-2xl px-6 py-4 mr-auto max-w-2xl;
+  }
+
+  .rich-editor {
+    @apply bg-white border border-gray-200 rounded-lg min-h-[120px] p-4;
+  }
+
+  .toolbar {
+    @apply flex items-center space-x-1 p-3 border-b border-gray-200 bg-gray-50;
+  }
+
+  .toolbar-button {
+    @apply p-2 text-gray-600 hover:bg-gray-200 rounded transition-colors;
+  }
+
+  .toolbar-button.active {
+    @apply bg-gray-200 text-gray-900;
+  }
+
+  .send-button {
+    @apply bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-colors flex items-center justify-center;
+  }
+
+  .attachment-button {
+    @apply text-gray-400 hover:text-gray-600 p-3 transition-colors;
+  }
+}
+
+@layer utilities {
+  /* Custom prose styles for better integration */
+  .prose-custom {
+    @apply prose prose-sm prose-gray max-w-none;
+  }
+  
+  .prose-custom h1 {
+    @apply text-xl font-bold text-gray-900 mb-3 border-b border-gray-200 pb-2;
+  }
+  
+  .prose-custom h2 {
+    @apply text-lg font-semibold text-gray-900 mb-2;
+  }
+  
+  .prose-custom h3 {
+    @apply text-base font-semibold text-gray-900 mb-1;
+  }
+  
+  .prose-custom p {
+    @apply text-gray-700 mb-2 leading-relaxed;
+  }
+  
+  .prose-custom ul {
+    @apply list-disc list-inside text-gray-700 mb-2 space-y-1;
+  }
+  
+  .prose-custom ol {
+    @apply list-decimal list-inside text-gray-700 mb-2 space-y-1;
+  }
+  
+  .prose-custom blockquote {
+    @apply border-l-4 border-gray-300 pl-4 italic text-gray-600 bg-gray-50 py-2 rounded-r;
+  }
+  
+  .prose-custom code {
+    @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-red-600;
+  }
+  
+  .prose-custom pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm;
+  }
+  
+  .prose-custom pre code {
+    @apply bg-transparent p-0 text-inherit;
   }
 }
