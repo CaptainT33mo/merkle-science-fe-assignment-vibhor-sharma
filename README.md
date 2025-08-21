@@ -4,6 +4,10 @@
 
 A modern React-based chat interface built with TypeScript, Vite, and TanStack Router.
 
+### Note for the reviewer/evaluator
+
+The support to add emoji by typing ⁠ `:slightly_smiling_face:` ⁠ is not there due to the fact that I chose a different WYSIWYG editor. This can be resolved by choosing a different WYSIWYG editor like lexical editor from Meta.
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed on your machine:
