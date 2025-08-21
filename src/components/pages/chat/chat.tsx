@@ -113,22 +113,18 @@ export default function Chat() {
           apiKey: apiKey.trim() || "invalid", // Use "invalid" if empty to trigger dummy response
           message: text,
           onChunk: (chunk) => {
-            console.log("Received chunk:", chunk);
             setMessages((prev) => {
               const updated = prev.map((msg) =>
                 msg.isStreaming ? { ...msg, text: msg.text + chunk } : msg
               );
-              console.log("Updated messages state:", updated);
               return updated;
             });
           },
           onComplete: () => {
-            console.log("Streaming completed");
             setMessages((prev) => {
               const updated = prev.map((msg) =>
                 msg.isStreaming ? { ...msg, isStreaming: false } : msg
               );
-              console.log("Final messages state:", updated);
               return updated;
             });
             setIsLoading(false);
@@ -207,22 +203,18 @@ export default function Chat() {
           apiKey: apiKey.trim() || "invalid", // Use "invalid" if empty to trigger dummy response
           message: userMessage.text,
           onChunk: (chunk) => {
-            console.log("Received chunk (regenerate):", chunk);
             setMessages((prev) => {
               const updated = prev.map((msg) =>
                 msg.isStreaming ? { ...msg, text: msg.text + chunk } : msg
               );
-              console.log("Updated messages state (regenerate):", updated);
               return updated;
             });
           },
           onComplete: () => {
-            console.log("Streaming completed (regenerate)");
             setMessages((prev) => {
               const updated = prev.map((msg) =>
                 msg.isStreaming ? { ...msg, isStreaming: false } : msg
               );
-              console.log("Final messages state (regenerate):", updated);
               return updated;
             });
             setIsLoading(false);

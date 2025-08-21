@@ -13,7 +13,7 @@ function Index() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center bg-gray-50">
+    <div className="flex-1 flex items-center justify-center bg-gray-50 md:mr-2 md:mb-2 md:rounded-md">
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">Home</h2>
         <p className="text-gray-600 mb-6">

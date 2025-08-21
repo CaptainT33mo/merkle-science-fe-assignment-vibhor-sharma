@@ -13,7 +13,7 @@ export default function Header() {
         >
           <Menu className="h-4 w-4 text-gray-600" />
         </button>
-        <div className="flex items-center md:w-64">
+        <div className="flex items-center md:w-72">
           <MerkleLogo className="h-4 md:h-6 w-auto" />
         </div>
       </div>

@@ -22,7 +22,6 @@ export async function streamOpenAIResponse({
 }: OpenAIStreamOptions) {
   // For testing: force dummy response if API key is "test" or "invalid"
   if (apiKey === "test" || apiKey === "invalid") {
-    console.log("Test/invalid mode: using dummy response");
     const dummyResponse = getDummyResponseByKeywords(message);
     streamDummyResponse(
       dummyResponse,
@@ -111,7 +110,6 @@ export async function streamOpenAIResponse({
   } catch (error) {
     // Check if the error is due to abort
     if (error instanceof Error && error.name === "AbortError") {
-      console.log("Request was aborted");
       return;
     }
 
@@ -120,7 +118,6 @@ export async function streamOpenAIResponse({
     // Use dummy response as fallback
     try {
       const dummyResponse = getDummyResponseByKeywords(message);
-      console.log("Using dummy response:", dummyResponse.title);
       streamDummyResponse(
         dummyResponse,
         onChunk,

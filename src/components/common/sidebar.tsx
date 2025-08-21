@@ -1,11 +1,11 @@
 import { useGlobalStore } from "@/store";
-import { Home, MessageCircle, Settings, X } from "lucide-react";
+import { Home, MessageCircle, PanelLeftClose, X } from "lucide-react";
 import { Link, useRouter } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 
 interface SidebarNavItemProps {
   to: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   label: string;
   onClick?: () => void;
 }
@@ -24,12 +24,14 @@ const SidebarNavItem = ({
       to={to}
       onClick={onClick}
       className={`sidebar-item w-full text-left flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors ${
-        isActive ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700" : ""
+        isActive ? "bg-blue-50 !text-blue-700 border-r-2 border-blue-700" : ""
       }`}
     >
-      <Icon
-        className={`h-5 w-5 mr-3 ${isActive ? "text-blue-700" : "text-gray-500"}`}
-      />
+      {Icon && (
+        <Icon
+          className={`h-5 w-5 mr-3 ${isActive ? "text-blue-700" : "text-gray-500"}`}
+        />
+      )}
       {label}
     </Link>
   );
@@ -46,8 +48,11 @@ export default function Sidebar() {
   const sidebarContent = (
     <div className="h-full bg-white border-r border-gray-200 flex flex-col rounded-md">
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-          <div className="w-4 h-4 bg-gray-600 rounded"></div>
+        <div
+          className="w-6 h-6 bg-white border rounded flex items-center justify-center"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          <PanelLeftClose className="w-4 h-4" />
         </div>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -62,7 +67,7 @@ export default function Sidebar() {
           <SidebarNavItem
             key={item.id}
             to={item.path}
-            icon={item.icon}
+            // icon={item.icon}
             label={item.label}
             onClick={() => setIsSidebarOpen(false)}
           />
@@ -72,7 +77,7 @@ export default function Sidebar() {
       <div className="p-4 border-t border-gray-200">
         <SidebarNavItem
           to="/settings"
-          icon={Settings}
+          // icon={Settings}
           label="Settings"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -85,7 +90,7 @@ export default function Sidebar() {
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -100,7 +105,7 @@ export default function Sidebar() {
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden md:block w-64 h-full p-2">{sidebarContent}</div>
+      <div className="hidden md:block w-72 h-full p-2">{sidebarContent}</div>
     </>
   );
 }

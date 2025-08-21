@@ -7,7 +7,7 @@ export const Route = createFileRoute("/settings")({
 
 function RouteComponent() {
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-6 bg-gray-50">
+    <div className="flex-1 flex flex-col p-4 md:p-6 bg-gray-50 md:mr-2 md:mb-2 md:rounded-md">
       <h2 className="text-2xl font-semibold text-gray-900 mb-6">Settings</h2>
       <ApiKeySettings />
       <div className="bg-white rounded-lg p-4 border">

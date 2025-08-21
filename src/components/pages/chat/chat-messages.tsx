@@ -29,8 +29,6 @@ interface ChatMessagesProps {
 
 // MarkdownRenderer component with optimized re-rendering
 const MarkdownRenderer = ({ content }: { content: string }) => {
-  console.log("MarkdownRenderer received content:", content);
-
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -51,12 +49,6 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
   // Update editor content when content prop changes
   useEffect(() => {
     if (editor && editor.getHTML() !== content) {
-      console.log(
-        "Updating editor content from:",
-        editor.getHTML(),
-        "to:",
-        content
-      );
       editor.commands.setContent(content || "");
     }
   }, [editor, content]);
@@ -89,7 +81,6 @@ export default function ChatMessages({
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.id !== lastMessageIdRef.current) {
-      console.log("New message detected, scrolling to bottom");
       lastMessageIdRef.current = lastMessage.id;
 
       // For new messages, always scroll to bottom
@@ -106,8 +97,6 @@ export default function ChatMessages({
   useEffect(() => {
     const streamingMessage = messages.find((msg) => msg.isStreaming);
     if (streamingMessage) {
-      console.log("Streaming message detected, checking scroll position");
-
       // Check if user is at bottom and scroll if needed
       const container = messagesContainerRef.current;
       if (container) {
@@ -115,21 +104,11 @@ export default function ChatMessages({
         const threshold = 10; // 10px threshold to consider "at bottom"
         const atBottom = scrollHeight - scrollTop - clientHeight < threshold;
 
-        console.log("Streaming scroll check:", {
-          scrollTop,
-          scrollHeight,
-          clientHeight,
-          atBottom
-        });
-
         if (atBottom) {
-          console.log("User at bottom during streaming, scrolling to bottom");
           // Use requestAnimationFrame for smooth scrolling
           requestAnimationFrame(() => {
             container.scrollTop = container.scrollHeight;
           });
-        } else {
-          console.log("User not at bottom during streaming, not scrolling");
         }
       }
     }
@@ -170,14 +149,12 @@ export default function ChatMessages({
     }
   };
 
-  const handleThumbsUp = (messageId: string) => {
+  const handleThumbsUp = () => {
     // TODO: Implement thumbs up functionality
-    console.log("Thumbs up for message:", messageId);
   };
 
-  const handleThumbsDown = (messageId: string) => {
+  const handleThumbsDown = () => {
     // TODO: Implement thumbs down functionality
-    console.log("Thumbs down for message:", messageId);
   };
 
   const handleRefresh = (messageId: string) => {
@@ -229,7 +206,7 @@ export default function ChatMessages({
                 {/* Action Buttons */}
                 <div className="action-buttons flex items-center space-x-2 mt-3 pt-3 border-t border-gray-200">
                   <ActionButton
-                    onClick={() => handleThumbsUp(message.id)}
+                    onClick={() => handleThumbsUp()}
                     title="Thumbs up"
                     ariaLabel="Rate this response positively"
                     hoverColor="green"
@@ -237,7 +214,7 @@ export default function ChatMessages({
                     <ThumbsUp className="h-4 w-4" />
                   </ActionButton>
                   <ActionButton
-                    onClick={() => handleThumbsDown(message.id)}
+                    onClick={() => handleThumbsDown()}
                     title="Thumbs down"
                     ariaLabel="Rate this response negatively"
                     hoverColor="red"
