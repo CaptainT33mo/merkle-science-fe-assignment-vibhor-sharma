@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Key, Eye, EyeOff, Trash2 } from "lucide-react";
 import { useGlobalStore } from "@/store";
+import { Button } from "@/components/ui/button";
 
-export const ApiKeySettings = () => {
+export default function ApiKeySettings() {
   const { apiKey, setApiKey, clearApiKey } = useGlobalStore();
   const [showKey, setShowKey] = useState(false);
   const [inputValue, setInputValue] = useState(apiKey);
@@ -55,21 +56,23 @@ export const ApiKeySettings = () => {
             )}
           </button>
         </div>
-        <button
+        <Button
           onClick={handleSaveKey}
+          variant="primary"
           disabled={!inputValue.trim()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
+          // className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
         >
           Save Key
-        </button>
+        </Button>
         {apiKey && (
-          <button
+          <Button
+            variant="destructive"
             onClick={handleClearKey}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 whitespace-nowrap flex items-center gap-1"
+            // className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 whitespace-nowrap flex items-center gap-1"
           >
             <Trash2 className="h-4 w-4" />
             Clear
-          </button>
+          </Button>
         )}
       </div>
 
@@ -80,4 +83,4 @@ export const ApiKeySettings = () => {
       )}
     </div>
   );
-};
+}

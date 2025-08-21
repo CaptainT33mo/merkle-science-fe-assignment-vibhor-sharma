@@ -273,10 +273,12 @@ export function streamDummyResponse(
   response: DummyResponse,
   onChunk: (chunk: string) => void,
   onComplete: () => void,
-  speed: number = 50 // milliseconds per character
+  speed: number = 50, // milliseconds per character
+  onStreamStart?: (timeoutId: NodeJS.Timeout) => void
 ) {
   const content = response.content;
   let index = 0;
+  let currentTimeoutId: NodeJS.Timeout | null = null;
 
   const streamNextChunk = () => {
     if (index < content.length) {
@@ -286,7 +288,12 @@ export function streamDummyResponse(
       onChunk(chunk);
       index += chunkSize;
 
-      setTimeout(streamNextChunk, speed);
+      currentTimeoutId = setTimeout(streamNextChunk, speed);
+
+      // Call the callback with the current timeout ID (this will be updated on each call)
+      if (onStreamStart) {
+        onStreamStart(currentTimeoutId);
+      }
     } else {
       onComplete();
     }

@@ -8,14 +8,32 @@ interface OpenAIStreamOptions {
   message: string;
   onChunk: (chunk: string) => void;
   onComplete: () => void;
+  abortSignal?: AbortSignal;
+  onDummyStreamStart?: (timeoutId: NodeJS.Timeout) => void;
 }
 
 export async function streamOpenAIResponse({
   apiKey,
   message,
   onChunk,
-  onComplete
+  onComplete,
+  abortSignal,
+  onDummyStreamStart
 }: OpenAIStreamOptions) {
+  // For testing: force dummy response if API key is "test" or "invalid"
+  if (apiKey === "test" || apiKey === "invalid") {
+    console.log("Test/invalid mode: using dummy response");
+    const dummyResponse = getDummyResponseByKeywords(message);
+    streamDummyResponse(
+      dummyResponse,
+      onChunk,
+      onComplete,
+      50,
+      onDummyStreamStart
+    );
+    return;
+  }
+
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -39,7 +57,8 @@ export async function streamOpenAIResponse({
         stream: true,
         temperature: 0.7,
         max_tokens: 2000
-      })
+      }),
+      signal: abortSignal
     });
 
     if (!response.ok) {
@@ -89,11 +108,33 @@ export async function streamOpenAIResponse({
         }
       }
     }
-  } catch {
-    console.log("OpenAI API failed, using dummy response as fallback");
+  } catch (error) {
+    // Check if the error is due to abort
+    if (error instanceof Error && error.name === "AbortError") {
+      console.log("Request was aborted");
+      return;
+    }
+
+    console.log("OpenAI API failed, using dummy response as fallback", error);
 
     // Use dummy response as fallback
-    const dummyResponse = getDummyResponseByKeywords(message);
-    streamDummyResponse(dummyResponse, onChunk, onComplete);
+    try {
+      const dummyResponse = getDummyResponseByKeywords(message);
+      console.log("Using dummy response:", dummyResponse.title);
+      streamDummyResponse(
+        dummyResponse,
+        onChunk,
+        onComplete,
+        50,
+        onDummyStreamStart
+      );
+    } catch (dummyError) {
+      console.error("Dummy response also failed:", dummyError);
+      // Provide a basic fallback response
+      onChunk(
+        "I apologize, but I'm currently unable to provide a response. Please try again later."
+      );
+      onComplete();
+    }
   }
 }

@@ -17,7 +17,8 @@ import LinkExtension from "@tiptap/extension-link";
 import ImageExtension from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
 import { Markdown } from "tiptap-markdown";
-import "./RichTextEditor.css";
+import ToolbarButton from "./toolbar-button";
+import "./index.css";
 
 interface RichTextEditorProps {
   placeholder?: string;
@@ -39,10 +40,7 @@ export interface RichTextEditorRef {
   focus: () => void;
 }
 
-export const RichTextEditor = forwardRef<
-  RichTextEditorRef,
-  RichTextEditorProps
->(
+const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
   (
     {
       placeholder = "Ask me anything ...",
@@ -155,11 +153,11 @@ export const RichTextEditor = forwardRef<
 
     return (
       <div>
-        <div className="toolbar">
-          <div className="flex items-center space-x-1">
+        <div className="toolbar md:pl-0.5">
+          <div className="flex items-center space-x-1 border-r">
             <div className="relative">
               <select
-                className="px-3 py-1 text-sm border border-gray-300 rounded bg-white text-gray-700 min-w-[100px] appearance-none pr-8"
+                className="px-3 py-1 text-sm bg-white text-gray-700 min-w-[100px] appearance-none pr-8"
                 value={getCurrentHeadingLevel()}
                 onChange={(e) => {
                   if (e.target.value === "paragraph") {
@@ -182,82 +180,74 @@ export const RichTextEditor = forwardRef<
             </div>
           </div>
 
-          <div className="flex items-center space-x-1 ml-4">
-            <button
+          <div className="flex items-center space-x-1 md:ml-4">
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleBold().run()}
-              className={`toolbar-button ${editor.isActive("bold") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("bold")}
               title="Bold"
             >
               <Bold className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
 
-            <button
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={`toolbar-button ${editor.isActive("italic") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("italic")}
               title="Italic"
             >
               <Italic className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
 
-            <button
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleUnderline().run()}
-              className={`toolbar-button ${editor.isActive("underline") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("underline")}
               title="Underline"
             >
               <Underline className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
           </div>
 
-          <div className="flex items-center space-x-1 ml-4">
-            <button
+          <div className="flex items-center space-x-1 md:ml-4">
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={`toolbar-button ${editor.isActive("bulletList") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("bulletList")}
               title="Bullet List"
             >
               <List className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
 
-            <button
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={`toolbar-button ${editor.isActive("orderedList") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("orderedList")}
               title="Numbered List"
             >
               <ListOrdered className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
 
-            <button
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              className={`toolbar-button ${editor.isActive("blockquote") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("blockquote")}
               title="Quote"
             >
               <Quote className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
 
-            <button
+            <ToolbarButton
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              className={`toolbar-button ${editor.isActive("codeBlock") ? "bg-gray-200" : ""}`}
+              isActive={editor.isActive("codeBlock")}
               title="Code Block"
             >
               <Code className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
           </div>
 
-          <div className="flex items-center space-x-1 ml-4">
-            <button
-              onClick={addLink}
-              className="toolbar-button"
-              title="Insert Link"
-            >
+          <div className="flex items-center space-x-1 md:ml-4">
+            <ToolbarButton onClick={addLink} title="Insert Link">
               <Link className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
 
-            <button
-              onClick={addImage}
-              className="toolbar-button"
-              title="Insert Image"
-            >
+            <ToolbarButton onClick={addImage} title="Insert Image">
               <ImageIcon className="h-4 w-4" />
-            </button>
+            </ToolbarButton>
           </div>
         </div>
 
@@ -266,9 +256,16 @@ export const RichTextEditor = forwardRef<
             editor={editor}
             className="prose-custom focus:outline-none"
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && onEnterPress) {
-                e.preventDefault();
-                onEnterPress();
+              if (e.key === "Enter") {
+                if (e.shiftKey) {
+                  // Shift+Enter: Create a new line
+                  e.preventDefault();
+                  editor.chain().focus().setHardBreak().run();
+                } else if (onEnterPress) {
+                  // Enter: Submit the form
+                  e.preventDefault();
+                  onEnterPress();
+                }
               }
             }}
           />
@@ -277,3 +274,5 @@ export const RichTextEditor = forwardRef<
     );
   }
 );
+
+export default RichTextEditor;

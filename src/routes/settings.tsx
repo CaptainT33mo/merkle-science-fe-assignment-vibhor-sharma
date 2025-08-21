@@ -1,4 +1,4 @@
-import { ApiKeySettings } from "@/components/ApiKeySettings";
+import ApiKeySettings from "@/components/pages/settings/api-key-settings";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/settings")({

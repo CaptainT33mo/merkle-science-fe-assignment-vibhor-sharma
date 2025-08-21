@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
-import { ChatMessages } from "./ChatMessages";
-import { RichTextEditor } from "./RichTextEditor";
-import type { RichTextEditorRef } from "./RichTextEditor";
 import { streamOpenAIResponse } from "@/lib/openAi";
 import { useGlobalStore } from "@/store";
 import { useNavigate } from "@tanstack/react-router";
-import { Send, Paperclip, Square, X } from "lucide-react";
+import { Send, Paperclip, X, Square } from "lucide-react";
+import type { RichTextEditorRef } from "@/components/common/rich-text-editor";
+import RichTextEditor from "@/components/common/rich-text-editor";
+import ChatMessages from "./chat-messages";
+import { Button } from "@/components/ui/button";
 
 interface Message {
   id: string;
@@ -22,7 +23,7 @@ interface AttachedFile {
   size: number;
 }
 
-export const MerkleChat = () => {
+export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [attachedFile, setAttachedFile] = useState<AttachedFile | null>(null);
@@ -30,8 +31,33 @@ export const MerkleChat = () => {
   const { apiKey } = useGlobalStore();
   const editorRef = useRef<RichTextEditorRef>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const dummyStreamTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const navigate = useNavigate();
+
+  const stopStreaming = () => {
+    // Abort API request if it exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    // Clear dummy stream timeout if it exists
+    if (dummyStreamTimeoutRef.current) {
+      clearTimeout(dummyStreamTimeoutRef.current);
+      dummyStreamTimeoutRef.current = null;
+    }
+
+    // Mark streaming as complete
+    setMessages((prev) => {
+      const updated = prev.map((msg) =>
+        msg.isStreaming ? { ...msg, isStreaming: false } : msg
+      );
+      return updated;
+    });
+    setIsLoading(false);
+  };
 
   const handleSendMessage = async (text: string) => {
     if (!apiKey.trim()) {
@@ -78,26 +104,58 @@ export const MerkleChat = () => {
         return [...filtered, aiMessage];
       });
 
+      // Create new abort controller for this request
+      abortControllerRef.current = new AbortController();
+
       // Start streaming response
-      streamOpenAIResponse({
-        apiKey,
-        message: text,
-        onChunk: (chunk) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.isStreaming ? { ...msg, text: msg.text + chunk } : msg
-            )
-          );
-        },
-        onComplete: () => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.isStreaming ? { ...msg, isStreaming: false } : msg
-            )
-          );
-          setIsLoading(false);
-        }
-      });
+      try {
+        streamOpenAIResponse({
+          apiKey: apiKey.trim() || "invalid", // Use "invalid" if empty to trigger dummy response
+          message: text,
+          onChunk: (chunk) => {
+            console.log("Received chunk:", chunk);
+            setMessages((prev) => {
+              const updated = prev.map((msg) =>
+                msg.isStreaming ? { ...msg, text: msg.text + chunk } : msg
+              );
+              console.log("Updated messages state:", updated);
+              return updated;
+            });
+          },
+          onComplete: () => {
+            console.log("Streaming completed");
+            setMessages((prev) => {
+              const updated = prev.map((msg) =>
+                msg.isStreaming ? { ...msg, isStreaming: false } : msg
+              );
+              console.log("Final messages state:", updated);
+              return updated;
+            });
+            setIsLoading(false);
+            abortControllerRef.current = null;
+          },
+          abortSignal: abortControllerRef.current.signal,
+          onDummyStreamStart: (timeoutId: NodeJS.Timeout) => {
+            dummyStreamTimeoutRef.current = timeoutId;
+          }
+        });
+      } catch (error) {
+        console.error("Error in streamOpenAIResponse:", error);
+        // Fallback: provide a basic response
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.isStreaming
+              ? {
+                  ...msg,
+                  text: "I apologize, but I'm currently unable to provide a response. Please try again later.",
+                  isStreaming: false
+                }
+              : msg
+          )
+        );
+        setIsLoading(false);
+        abortControllerRef.current = null;
+      }
     }, 1000);
   };
 
@@ -140,26 +198,58 @@ export const MerkleChat = () => {
         return [...filtered, aiMessage];
       });
 
+      // Create new abort controller for this request
+      abortControllerRef.current = new AbortController();
+
       // Start streaming response
-      streamOpenAIResponse({
-        apiKey,
-        message: userMessage.text,
-        onChunk: (chunk) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.isStreaming ? { ...msg, text: msg.text + chunk } : msg
-            )
-          );
-        },
-        onComplete: () => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.isStreaming ? { ...msg, isStreaming: false } : msg
-            )
-          );
-          setIsLoading(false);
-        }
-      });
+      try {
+        streamOpenAIResponse({
+          apiKey: apiKey.trim() || "invalid", // Use "invalid" if empty to trigger dummy response
+          message: userMessage.text,
+          onChunk: (chunk) => {
+            console.log("Received chunk (regenerate):", chunk);
+            setMessages((prev) => {
+              const updated = prev.map((msg) =>
+                msg.isStreaming ? { ...msg, text: msg.text + chunk } : msg
+              );
+              console.log("Updated messages state (regenerate):", updated);
+              return updated;
+            });
+          },
+          onComplete: () => {
+            console.log("Streaming completed (regenerate)");
+            setMessages((prev) => {
+              const updated = prev.map((msg) =>
+                msg.isStreaming ? { ...msg, isStreaming: false } : msg
+              );
+              console.log("Final messages state (regenerate):", updated);
+              return updated;
+            });
+            setIsLoading(false);
+            abortControllerRef.current = null;
+          },
+          abortSignal: abortControllerRef.current.signal,
+          onDummyStreamStart: (timeoutId: NodeJS.Timeout) => {
+            dummyStreamTimeoutRef.current = timeoutId;
+          }
+        });
+      } catch (error) {
+        console.error("Error in streamOpenAIResponse (regenerate):", error);
+        // Fallback: provide a basic response
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.isStreaming
+              ? {
+                  ...msg,
+                  text: "I apologize, but I'm currently unable to provide a response. Please try again later.",
+                  isStreaming: false
+                }
+              : msg
+          )
+        );
+        setIsLoading(false);
+        abortControllerRef.current = null;
+      }
     }, 1000);
   };
 
@@ -188,10 +278,10 @@ export const MerkleChat = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full">
-      <div className="merkle-gradient flex-1 flex flex-col h-full">
+      <div className="flex-1 flex flex-col h-full md:px-2">
         {messages.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center p-4">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-light text-white text-center max-w-4xl">
+          <div className="flex-1 flex items-center justify-center p-4 backdrop-blur-3xl bg-white/20 rounded-[20px] md:rounded-md mb-1 md:mb-0 md:mx-0 mx-1">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl text-white text-center max-w-4xl font-medium">
               Ask anything about blockchain, cryptocurrency
             </h1>
           </div>
@@ -199,8 +289,8 @@ export const MerkleChat = () => {
           <ChatMessages messages={messages} onRegenerate={handleRegenerate} />
         )}
 
-        <div className="p-3 md:p-6 pt-0">
-          <div className="rich-editor p-0">
+        <div className="p-0 md:pb-2 md:pt-1 ">
+          <div className="rich-editor md:rounded-md bg-white p-0">
             <RichTextEditor
               ref={editorRef}
               isLoading={isLoading}
@@ -208,15 +298,16 @@ export const MerkleChat = () => {
               onEnterPress={handleSend}
             />
 
-            <div className="flex items-center justify-between p-3 md:p-4 pt-0">
+            <div className="flex items-center justify-between p-3 md:p-3 bg-black/5 border-t">
               <div className="flex items-center space-x-2">
-                <button
-                  className="attachment-button"
+                <Button
+                  className="pointer"
+                  variant="outline"
                   onClick={triggerFileInput}
                   disabled={isLoading}
                 >
                   <Paperclip className="h-4 w-4 md:h-5 md:w-5" />
-                </button>
+                </Button>
 
                 <input
                   ref={fileInputRef}
@@ -248,21 +339,26 @@ export const MerkleChat = () => {
 
               <div className="flex items-center space-x-2">
                 {isLoading ? (
-                  <button className="send-button bg-gray-400 cursor-not-allowed">
-                    <Square className="h-4 w-4" />
-                  </button>
+                  <Button
+                    onClick={stopStreaming}
+                    variant="primary"
+                    className="bg-brand-primary/20"
+                    title="Stop response"
+                  >
+                    <Square className="h-4 w-4 fill-brand-primary stroke-brand-primary" />
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     onClick={handleSend}
-                    className={`send-button ${
+                    className={`${
                       editorContent.trim()
-                        ? "bg-blue-600 hover:bg-blue-700"
+                        ? "bg-brand-primary hover:bg-blue-700"
                         : "bg-gray-400 cursor-not-allowed"
                     }`}
                     disabled={!editorContent.trim()}
                   >
-                    Send <Send className="h-4 w-4 ml-2 fill-white" />
-                  </button>
+                    Send <Send className="h-4 w-4 ml-1 fill-white" />
+                  </Button>
                 )}
               </div>
             </div>
@@ -271,4 +367,4 @@ export const MerkleChat = () => {
       </div>
     </div>
   );
-};
+}

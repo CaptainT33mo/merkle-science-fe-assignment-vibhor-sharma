@@ -1,5 +1,5 @@
-import { Header } from "@/components/Header";
-import { Sidebar } from "@/components/Sidebar";
+import Header from "@/components/common/header";
+import Sidebar from "@/components/common/sidebar";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createRootRoute({

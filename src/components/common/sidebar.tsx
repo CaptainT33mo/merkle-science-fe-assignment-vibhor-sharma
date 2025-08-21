@@ -35,7 +35,7 @@ const SidebarNavItem = ({
   );
 };
 
-export const Sidebar = () => {
+export default function Sidebar() {
   const { isSidebarOpen, setIsSidebarOpen } = useGlobalStore();
 
   const menuItems = [
@@ -44,7 +44,7 @@ export const Sidebar = () => {
   ];
 
   const sidebarContent = (
-    <div className="h-full bg-white border-r border-gray-200 flex flex-col">
+    <div className="h-full bg-white border-r border-gray-200 flex flex-col rounded-md">
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
           <div className="w-4 h-4 bg-gray-600 rounded"></div>
@@ -100,7 +100,7 @@ export const Sidebar = () => {
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden md:block w-64 h-full">{sidebarContent}</div>
+      <div className="hidden md:block w-64 h-full p-2">{sidebarContent}</div>
     </>
   );
-};
+}

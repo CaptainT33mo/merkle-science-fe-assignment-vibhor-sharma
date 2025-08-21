@@ -19,11 +19,11 @@ export const useGlobalStore = create<GlobalState>()(
       clearApiKey: () => set(() => ({ apiKey: "" }))
     }),
     {
-      name: "merkle-chat-storage", // unique name for localStorage key
+      name: "merkle-chat-storage",
       partialize: (state) => ({
         apiKey: state.apiKey,
         isSidebarOpen: state.isSidebarOpen
-      }) // only persist these fields
+      })
     }
   )
 );
