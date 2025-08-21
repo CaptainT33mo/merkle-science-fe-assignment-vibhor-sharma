@@ -185,10 +185,10 @@ export default function ChatMessages({
           )}
 
           {message.isSearching && (
-            <div className="flex items-center space-x-3 text-white/70 px-2 animate-pulse">
+            <div className="flex items-center space-x-3 px-2 animate-pulse">
               <Info className="h-4 w-4 text-blue-300 flex-shrink-0" />
-              <span className="text-sm">
-                Searching for <span className="text-white">{message.text}</span>
+              <span className="text-sm !text-white md:!text-black">
+                Searching for <span className="">{message.text}</span>
               </span>
             </div>
           )}

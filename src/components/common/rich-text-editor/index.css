@@ -139,3 +139,32 @@
     margin-bottom: 4px;
   }
 }
+
+/* Emoji picker styles */
+.emoji-picker {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.emoji-picker button {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+.emoji-picker button:hover {
+  background-color: #f3f4f6;
+  transform: scale(1.1);
+  transition: all 0.1s ease;
+}
+
+/* Mobile-specific emoji picker adjustments */
+@media (max-width: 768px) {
+  .emoji-picker {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+}
+
+@media (max-width: 480px) {
+  .emoji-picker {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  }
+}

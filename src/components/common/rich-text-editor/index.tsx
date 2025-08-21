@@ -1,4 +1,4 @@
-import { useImperativeHandle, forwardRef } from "react";
+import { useImperativeHandle, forwardRef, useState } from "react";
 import {
   Bold,
   Italic,
@@ -9,15 +9,18 @@ import {
   Link,
   Image as ImageIcon,
   Code,
-  ChevronDown
+  ChevronDown,
+  Smile
 } from "lucide-react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import LinkExtension from "@tiptap/extension-link";
 import ImageExtension from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
+import EmojiExtension from "@tiptap/extension-emoji";
 import { Markdown } from "tiptap-markdown";
 import ToolbarButton from "./toolbar-button";
+import EmojiPicker from "./emoji-picker";
 import "./index.css";
 
 interface RichTextEditorProps {
@@ -50,6 +53,7 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
     },
     ref
   ) => {
+    const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
     const editor = useEditor({
       extensions: [
         StarterKit,
@@ -63,6 +67,7 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
         TextAlign.configure({
           types: ["heading", "paragraph"]
         }),
+        EmojiExtension,
         Markdown.configure({
           html: true,
           tightLists: true,
@@ -248,6 +253,24 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
             <ToolbarButton onClick={addImage} title="Insert Image">
               <ImageIcon className="h-4 w-4" />
             </ToolbarButton>
+
+            <div className="relative">
+              <ToolbarButton
+                onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                title="Insert Emoji"
+              >
+                <Smile className="h-4 w-4" />
+              </ToolbarButton>
+              <EmojiPicker
+                isOpen={isEmojiPickerOpen}
+                onClose={() => setIsEmojiPickerOpen(false)}
+                onEmojiSelect={(emoji) => {
+                  if (editor) {
+                    editor.chain().focus().insertContent(emoji).run();
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
 
