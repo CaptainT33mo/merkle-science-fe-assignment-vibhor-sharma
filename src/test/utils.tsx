@@ -21,7 +21,7 @@ vi.mock("@/store", () => ({
 const router = createRouter({ routeTree });
 
 // Custom render function with router provider
-export const renderWithRouter = (component: React.ReactElement) => {
+export const renderWithRouter = () => {
   return render(<RouterProvider router={router} />);
 };
 

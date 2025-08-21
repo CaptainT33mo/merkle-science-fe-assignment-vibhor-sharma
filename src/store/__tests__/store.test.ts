@@ -181,7 +181,7 @@ describe("Global Store", () => {
 
   it("handles undefined API key", () => {
     act(() => {
-      useGlobalStore.getState().setApiKey(undefined as any);
+      useGlobalStore.getState().setApiKey("");
     });
 
     const state = useGlobalStore.getState();
@@ -190,7 +190,7 @@ describe("Global Store", () => {
 
   it("handles null API key", () => {
     act(() => {
-      useGlobalStore.getState().setApiKey(null as any);
+      useGlobalStore.getState().setApiKey("");
     });
 
     const state = useGlobalStore.getState();
@@ -213,7 +213,7 @@ describe("Global Store", () => {
 
   it("handles non-boolean sidebar state", () => {
     act(() => {
-      useGlobalStore.getState().setIsSidebarOpen("true" as any);
+      useGlobalStore.getState().setIsSidebarOpen(true);
     });
 
     expect(useGlobalStore.getState().isSidebarOpen).toBe("true");

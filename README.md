@@ -1,69 +1,138 @@
-# React + TypeScript + Vite
+# Chat Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Merkle Science Frontend Assignment by Vibhor Sharma
 
-Currently, two official plugins are available:
+A modern React-based chat interface built with TypeScript, Vite, and TanStack Router.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
 
-## Expanding the ESLint configuration
+Before you begin, ensure you have the following installed on your machine:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Node.js** (version 20 or higher)
+- **npm** or **yarn** package manager
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+You can check your Node.js version by running:
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+node --version
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Project Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 1. Clone the Repository
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/CaptainT33mo/merkle-science-fe-assignment-vibhor-sharma.git
+cd merkle-science-fe-assignment-vibhor-sharma
 ```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+Or if you prefer using yarn:
+
+```bash
+yarn install
+```
+
+## Available Scripts
+
+Once the dependencies are installed, you can run the following commands:
+
+### Development
+
+```bash
+npm run dev
+```
+
+Starts the development server using Vite. The application will be available at `http://localhost:5173` (or another port if 5173 is occupied).
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+Creates a production build of the application in the `dist` folder.
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+Serves the production build locally for testing.
+
+### Testing
+
+```bash
+npm test
+```
+
+Runs the test suite using Vitest.
+
+```bash
+npm run test:ui
+```
+
+Runs tests with the Vitest UI interface.
+
+```bash
+npm run test:coverage
+```
+
+Runs tests and generates coverage reports.
+
+### Linting
+
+```bash
+npm run lint
+```
+
+Runs ESLint to check for code quality issues.
+
+## Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── common/         # Shared components (header, sidebar, rich text editor)
+│   ├── icons/          # Icon components
+│   ├── images/         # Image components
+│   ├── pages/          # Page-specific components
+│   │   ├── chat/       # Chat interface components
+│   │   └── settings/   # Settings page components
+│   └── ui/             # UI components (buttons, etc.)
+├── lib/                # Utility libraries and configurations
+├── routes/             # TanStack Router route definitions
+├── store/              # Zustand state management
+└── test/               # Test utilities and setup
+```
+
+## Key Technologies
+
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **TanStack Router** - Client-side routing
+- **Tailwind CSS** - Styling
+- **Zustand** - State management
+- **Vitest** - Testing framework
+- **TipTap** - Rich text editor
+- **Radix UI** - Accessible UI primitives
+
+## Getting Started
+
+1. Follow the setup instructions above
+2. Run `npm run dev` to start the development server
+3. Open your browser and navigate to the provided localhost URL
+4. Start exploring the chat interface!
+
+## Contributing
+
+1. Make sure all tests pass: `npm test`
+2. Ensure code follows linting rules: `npm run lint`
+3. Build the project to check for any build issues: `npm run build`
