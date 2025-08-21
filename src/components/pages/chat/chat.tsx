@@ -349,7 +349,8 @@ export default function Chat() {
                     }`}
                     disabled={!editorContent.trim()}
                   >
-                    Send <Send className="h-4 w-4 ml-1 fill-white" />
+                    <span className="hidden md:block">Send</span>
+                    <Send className="h-4 w-4 md:ml-1 fill-white" />
                   </Button>
                 )}
               </div>
