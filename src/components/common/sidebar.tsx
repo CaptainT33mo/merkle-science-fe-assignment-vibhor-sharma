@@ -1,12 +1,13 @@
 import { useGlobalStore } from "@/store";
 import { Home, MessageCircle, PanelLeftClose, X } from "lucide-react";
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 
 interface SidebarNavItemProps {
   to: string;
   icon?: LucideIcon;
   label: string;
+  isActive?: boolean;
   onClick?: () => void;
 }
 
@@ -14,17 +15,15 @@ const SidebarNavItem = ({
   to,
   icon: Icon,
   label,
+  isActive,
   onClick
 }: SidebarNavItemProps) => {
-  const router = useRouter();
-  const isActive = router.latestLocation.pathname === to;
-
   return (
     <Link
       to={to}
       onClick={onClick}
-      className={`sidebar-item w-full text-left flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors ${
-        isActive ? "bg-blue-50 !text-blue-700 border-r-2 border-blue-700" : ""
+      className={`sidebar-item w-full text-left flex items-center pr-4 pl-2 py-3 text-gray-700 hover:bg-gray-100 transition-colors rounded-md ${
+        isActive ? "bg-blue-50 !text-blue-700" : ""
       }`}
     >
       {Icon && (
@@ -39,6 +38,7 @@ const SidebarNavItem = ({
 
 export default function Sidebar() {
   const { isSidebarOpen, setIsSidebarOpen } = useGlobalStore();
+  const location = useLocation();
 
   const menuItems = [
     { id: "home", label: "Home", icon: Home, path: "/" },
@@ -47,7 +47,7 @@ export default function Sidebar() {
 
   const sidebarContent = (
     <div className="h-full bg-white border-r border-gray-200 flex flex-col rounded-md">
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="p-4 flex items-center justify-between">
         <div
           className="w-6 h-6 bg-white border rounded flex items-center justify-center"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -62,11 +62,12 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1">
+      <nav className="flex-1 px-4">
         {menuItems.map((item) => (
           <SidebarNavItem
             key={item.id}
             to={item.path}
+            isActive={location.pathname === item.path}
             // icon={item.icon}
             label={item.label}
             onClick={() => setIsSidebarOpen(false)}
@@ -77,6 +78,7 @@ export default function Sidebar() {
       <div className="p-4 border-t border-gray-200">
         <SidebarNavItem
           to="/settings"
+          isActive={location.pathname === "/settings"}
           // icon={Settings}
           label="Settings"
           onClick={() => setIsSidebarOpen(false)}
